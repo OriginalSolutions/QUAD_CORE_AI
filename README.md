@@ -1,1 +1,175 @@
----```markdown# QUAD_CORE_AI 🧠**System Prognozowania Rynków Finansowych oparty o Cykliczny Konsensus**QUAD_CORE_AI to zaawansowany system algorytmiczny analizujący rynek BTC/USDT. Projekt zrywa z podejściem opartym na pojedynczym modelu, tworząc "Radę Algorytmów". Unikalność systemu polega na syntezie czterech fundamentalnie różnych matematycznie podejść oraz zastosowaniu deterministycznej, **cyklicznej strategii inwersji konsensusu**.---## 🏗 Cztery Filary Architektury (The Quad Core)Projekt wykorzystuje cztery fundamentalnie różne podejścia do analizy danych. Dzięki temu błędy jednego modelu są korygowane przez pozostałe.### 1. Monte Carlo (Stochastic Simulation) 🎲*   **Charakterystyka:** Metoda symulacji stochastycznej. Model nie "przewiduje" jednej ceny, lecz generuje tysiące możliwych ścieżek przyszłości na podstawie zmienności (volatility) i rozkładów prawdopodobieństwa.*   **Rola w systemie:** Określa **czyste prawdopodobieństwo statystyczne**.    *   W logach widoczny jako parametry: `Win` (ile ścieżek zakończyło się zyskiem), `Ahead` (wyprzedzenie), `Sup` (poziom wsparcia).    *   Jeśli Monte Carlo pokazuje 70% szans na wzrost, jest to silny fundament statystyczny dla pozostałych modeli.### 2. Random Forest (Ensemble Learning) 🌳*   **Charakterystyka:** Zespół drzew decyzyjnych, który tworzy nieliniowe reguły na podstawie surowych danych historycznych.*   **Rola w systemie:** Stabilizator ("Kotwica").    *   Wyróżnia się mechanizmem **Trust Score**. Wynik surowy (`Raw`) jest korygowany o historyczną dokładność (`Acc`).    *   Jeśli model w przeszłości się mylił, jego waga jest drastycznie redukowana (np. `x -0.03 [Trust]`), co zapobiega podążaniu za fałszywymi sygnałami.### 3. KAN v2.0 (Kolmogorov-Arnold Networks) 🧬*   **Charakterystyka:** Nowoczesna alternatywa dla klasycznych sieci MLP. Zamiast stałych funkcji aktywacji w węzłach, KAN posiada uczące się funkcje aktywacji (krzywe sklejane - splines) na krawędziach.*   **Rola w systemie:** Matematyczny geniusz.    *   Doskonała aproksymacja skomplikowanych, nieliniowych funkcji. Wyłapuje subtelne zależności matematyczne w cenie, które są niewidoczne dla standardowych sieci neuronowych i metod statystycznych.### 4. Neural Trend (Direct Network Output) 📉*   **Charakterystyka:** Głęboka sieć neuronowa (Deep Learning) zoptymalizowana pod kątem detekcji momentum i kierunku trendu.*   **Rola w systemie:** Wykrywanie impetu.    *   Działa jako "kompas" wskazujący, czy rynek znajduje się aktualnie w fazie silnego wzrostu, czy spadku, bez wchodzenia w szczegóły zmienności.---## ⚙️ Strategia Decyzyjna: Cykliczna Inwersja (The Cycle)System nie ufa ślepo wynikowi końcowemu. Zamiast tego stosuje deterministyczną strategię zmiany wektora gry w czasie, aby wykorzystać naturę rynków (które raz podążają za trendem, a raz go łamią).### Krok 1: Obliczanie Ważonego Konsensusu (Probability of BUY)Wszystkie modele zwracają wartość procentową oznaczającą prawdopodobieństwo wzrostu (Long Probability).*   Wartość **> 50%** oznacza tendencję wzrostową.*   Wartość **< 50%** oznacza tendencję spadkową.**Przykład obliczania konsensusu:**1.  **Monte Carlo:** 70.0% (Silny sygnał na wzrost)2.  **Random Forest:** 50.0% (Neutralny)3.  **KAN v2.0:** 44.5% (Lekki sygnał na spadek)4.  **Neural Trend:** 5.1% (Bardzo silny sygnał na spadek)**Wynik Konsensusu:** Średnia ważona wynosi np. **42.4%**.Ponieważ 42.4% < 50%, system interpretuje to jako sygnał **SELL**.### Krok 2: Cykl Gry (Follow vs. Invert)Po ustaleniu Konsensusu, system sprawdza, w jakiej fazie cyklu się znajduje. To chroni przed pułapkami rynkowymi.*   **Faza 1: Zgodna (Normal Mode):**    *   System gra **zgodnie** z Konsensusem.    *   Consensus mówi SELL -> System otwiera SHORT.*   **Faza 2: Inwersja (Inverted Mode):**    *   System gra **przeciwko** Konsensusowi (mnożnik `x-1`).    *   Consensus mówi SELL -> System otwiera LONG.    *   *Logika:* Zakładamy, że w tej fazie rynek "oszuka" większość wskaźników (Fakeout), więc "błędny" sygnał algorytmów staje się idealnym sygnałem odwrotnym.---## 🚀 Uruchomienie i Architektura### ⚙️ Konfiguracja Produkcyjna (Systemd)System działa jako usługa w tle (service), co zapewnia autostart po restarcie oraz automatyczne podnoszenie procesu w razie awarii. Konfiguracja została zoptymalizowana pod kątem współdzielenia stanu modeli AI (jeden proces) przy jednoczesnej obsłudze wielu użytkowników (wielowątkowość).**Lokalizacja pliku:** `/etc/systemd/system/quad_core.service````ini[Unit]Description=Gunicorn instance to serve QUAD_CORE_AIAfter=network.target[Service]User=rootGroup=rootWorkingDirectory=/root/QUAD_CORE_AIEnvironment="PATH=/root/QUAD_CORE_AI/venv/bin"# Wymuszenie natychmiastowego zapisu logów (bez buforowania w RAM)Environment="PYTHONUNBUFFERED=1"# ============================================================# KLUCZOWE PARAMETRY WYDAJNOŚCIOWE:# -w 1         -> JEDEN proces Worker.#                 Gwarantuje, że wszyscy użytkownicy widzą te same wyniki (wspólny stan pamięci).#                 Oszczędza RAM (modele AI ładowane są tylko raz).# --threads 16 -> SZESNAŚCIE wątków.#                 Pozwala na obsługę wielu zapytań HTTP jednocześnie w ramach jednego procesu.# --timeout 120 -> Zwiększony czas oczekiwania (dla długich obliczeń AI).# ============================================================ExecStart=/root/QUAD_CORE_AI/venv/bin/gunicorn -w 1 --threads 16 --timeout 120 -b 127.0.0.1:8050 app:app# Przekierowanie wszystkich logów (print oraz error) do pliku w folderze projektuStandardOutput=append:/root/QUAD_CORE_AI/app.logStandardError=append:/root/QUAD_CORE_AI/app.log# Automatyczny restart po awarii z 5-sekundowym opóźnieniem (ochrona przed pętlą restartów)Restart=alwaysRestartSec=5[Install]WantedBy=multi-user.target```### Rola `app.py`Sercem systemu jest plik **`app.py`**. To on pełni rolę orkiestratora, który łączy świat obliczeń AI ze światem webowym.1.  **Orkiestrator Wątków:** Przy starcie uruchamia `background_worker` – niezależny wątek działający w tle, który:    *   Pobiera dane rynkowe.    *   Uruchamia procesy predykcyjne (MC, RF, KAN, Trend).    *   Zarządza logiką cyklu i inwersji.2.  **Serwer API:** Udostępnia wyniki obliczeń dla interfejsu przeglądarkowego.---## 🛠 Procedura StartowaSystem jest zaprojektowany do pracy bezobsługowej.**1. Uruchomienie systemu:**```bashsystemctl start quad_core```**2. Weryfikacja działania (Podgląd mózgu AI):**Aby zobaczyć na żywo, jak modele głosują i w jakiej fazie cyklu jesteśmy:```bashtail -f /root/QUAD_CORE_AI/app.log```**3. Restart (po zmianach w kodzie):**```bashsystemctl restart quad_core```**4. Zatrzymanie:**```bashsystemctl stop quad_core```### Tryb Deweloperski (Ręczny)Aby uruchomić system ręcznie (np. do testów), pomijając usługę w tle:```bashsystemctl stop quad_core  # Zwolnij portcd /root/QUAD_CORE_AIsource venv/bin/activatepython3 app.py```---## 📊 Dostęp WWWDashboard wizualizujący decyzje modeli oraz aktualny stan cyklu (Inverted/Normal) dostępny jest pod adresem IP serwera (port 80 przekierowany przez Nginx na 8050):`http://91.107.236.122`---*Powered by QUAD_CORE Architecture*```
+Here is the full, professional translation of your `README.md` into English. I have preserved all formatting, code blocks, and the specific logic you described.
+
+You can copy the content below and paste it into your `README.md` file on the server.
+
+---
+
+```markdown
+# QUAD_CORE_AI 🧠
+
+**Financial Market Forecasting System Based on Cyclic Consensus**
+
+QUAD_CORE_AI is an advanced algorithmic system designed to analyze the BTC/USDT market. The project breaks away from the single-model approach, creating a "Council of Algorithms." The system's uniqueness lies in the synthesis of four fundamentally different mathematical approaches and the application of a deterministic, **cyclic consensus inversion strategy**.
+
+---
+
+## 🏗 The Four Pillars of Architecture (The Quad Core)
+
+The project utilizes four fundamentally different data analysis approaches. This ensures that errors from one model are corrected by the others.
+
+### 1. Monte Carlo (Stochastic Simulation) 🎲
+*   **Characteristics:** A stochastic simulation method. The model does not "predict" a single price but generates thousands of possible future paths based on volatility and probability distributions.
+*   **Role in the System:** Determines **pure statistical probability**.
+    *   Visible in logs as parameters: `Win` (how many paths ended in profit), `Ahead` (time lookahead), `Sup` (support level).
+    *   If Monte Carlo shows a 70% chance of growth, it provides a strong statistical foundation for the other models.
+
+### 2. Random Forest (Ensemble Learning) 🌳
+*   **Characteristics:** An ensemble of decision trees that creates non-linear rules based on raw historical data.
+*   **Role in the System:** The Stabilizer ("Anchor").
+    *   Distinguished by the **Trust Score** mechanism. The raw result (`Raw`) is corrected by historical accuracy (`Acc`).
+    *   If the model has been wrong in the past, its weight is drastically reduced (e.g., `x -0.03 [Trust]`), preventing the system from following false signals.
+
+### 3. KAN v2.0 (Kolmogorov-Arnold Networks) 🧬
+*   **Characteristics:** A modern alternative to classical MLP networks. Instead of fixed activation functions at nodes, KAN possesses learnable activation functions (splines) on the edges.
+*   **Role in the System:** The Mathematical Genius.
+    *   Excellent approximation of complex, non-linear functions. It captures subtle mathematical dependencies in price action that are invisible to standard neural networks and statistical methods.
+
+### 4. Neural Trend (Direct Network Output) 📉
+*   **Characteristics:** A Deep Learning neural network optimized for detecting momentum and trend direction.
+*   **Role in the System:** Momentum Detection.
+    *   Acts as a "compass" indicating whether the market is currently in a strong growth or decline phase, without delving into volatility details.
+
+---
+
+## ⚙️ Decision Strategy: Cyclic Inversion (The Cycle)
+
+The system does not blindly trust the final result. Instead, it applies a deterministic strategy of changing the trading vector over time to exploit the nature of markets (which sometimes follow the trend and sometimes break it).
+
+### Step 1: Calculating Weighted Consensus (Probability of BUY)
+
+All models return a percentage value representing the **Probability of Growth (Long Probability)**.
+*   Value **> 50%** indicates an upward trend.
+*   Value **< 50%** indicates a downward trend.
+
+**Example of Consensus Calculation:**
+1.  **Monte Carlo:** 70.0% (Strong BUY signal)
+2.  **Random Forest:** 50.0% (Neutral)
+3.  **KAN v2.0:** 44.5% (Slight SELL signal)
+4.  **Neural Trend:** 5.1% (Very strong SELL signal)
+
+**Consensus Result:** The weighted average is, for example, **42.4%**.
+Since 42.4% < 50%, the system interprets this as a **SELL** signal.
+
+### Step 2: The Game Cycle (Follow vs. Invert)
+After establishing the Consensus, the system checks which phase of the cycle it is currently in. This protects against market traps.
+
+*   **Phase 1: Aligned (Normal Mode):**
+    *   The system plays **in accordance** with the Consensus.
+    *   Consensus says SELL -> System opens **SHORT**.
+*   **Phase 2: Inversion (Inverted Mode):**
+    *   The system plays **against** the Consensus (multiplier `x-1`).
+    *   Consensus says SELL -> System opens **LONG**.
+    *   *Logic:* We assume that in this phase the market will "trick" most indicators (Fakeout), so the "wrong" signal from the algorithms becomes the ideal reverse signal.
+
+---
+
+## 🚀 Startup and Architecture
+
+### ⚙️ Production Configuration (Systemd)
+
+The system runs as a background service (`service`), ensuring auto-start after reboot and automatic process recovery in case of failure. The configuration has been optimized to share the AI model state (single process) while handling multiple users simultaneously (multithreading).
+
+**File location:** `/etc/systemd/system/quad_core.service`
+
+```ini
+[Unit]
+Description=Gunicorn instance to serve QUAD_CORE_AI
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/QUAD_CORE_AI
+Environment="PATH=/root/QUAD_CORE_AI/venv/bin"
+# Force immediate log writing (without RAM buffering)
+Environment="PYTHONUNBUFFERED=1"
+
+# ============================================================
+# KEY PERFORMANCE PARAMETERS:
+# -w 1         -> ONE Worker process.
+#                 Guarantees that all users see the same results (shared memory state).
+#                 Saves RAM (AI models are loaded only once).
+# --threads 16 -> SIXTEEN threads.
+#                 Allows handling multiple HTTP requests simultaneously within a single process.
+# --timeout 120 -> Increased timeout (for long AI calculations).
+# ============================================================
+
+ExecStart=/root/QUAD_CORE_AI/venv/bin/gunicorn -w 1 --threads 16 --timeout 120 -b 127.0.0.1:8050 app:app
+
+# Redirect all logs (print and error) to a file in the project folder
+StandardOutput=append:/root/QUAD_CORE_AI/app.log
+StandardError=append:/root/QUAD_CORE_AI/app.log
+
+# Automatic restart after failure with a 5-second delay (protection against restart loops)
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### The Role of `app.py`
+
+The heart of the system is the **`app.py`** file. It acts as the orchestrator connecting the world of AI calculations with the web world.
+
+1.  **Thread Orchestrator:** On startup, it launches the `background_worker` – an independent background thread that:
+    *   Fetches market data.
+    *   Runs predictive processes (MC, RF, KAN, Trend).
+    *   Manages the cycle and inversion logic.
+2.  **API Server:** Exposes calculation results for the browser interface.
+
+---
+
+## 🛠 Startup Procedure
+
+The system is designed for unattended operation.
+
+**1. Start the system:**
+```bash
+systemctl start quad_core
+```
+
+**2. Verify operation (View the AI Brain):**
+To see live how models are voting and what cycle phase we are in:
+```bash
+tail -f /root/QUAD_CORE_AI/app.log
+```
+
+**3. Restart (after code changes):**
+```bash
+systemctl restart quad_core
+```
+
+**4. Stop:**
+```bash
+systemctl stop quad_core
+```
+
+### Developer Mode (Manual)
+To run the system manually (e.g., for testing), bypassing the background service:
+```bash
+systemctl stop quad_core  # Free up the port
+cd /root/QUAD_CORE_AI
+source venv/bin/activate
+python3 app.py
+```
+
+---
+
+## 📊 Web Access
+
+The dashboard visualizing model decisions and the current cycle state (Inverted/Normal) is available at the server IP address (port 80 forwarded by Nginx to 8050):
+
+`http://91.107.236.122`
+
+---
