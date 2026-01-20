@@ -1,7 +1,3 @@
-Here is the full, professional translation of your `README.md` into English. I have preserved all formatting, code blocks, and the specific logic you described.
-
-You can copy the content below and paste it into your `README.md` file on the server.
-
 ---
 
 ```markdown
