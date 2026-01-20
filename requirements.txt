@@ -1,0 +1,12 @@
+# --- Web Server and Networking ---
+flask==3.0.2        # Web framework to serve the HTML dashboard and API endpoints
+flask-cors==4.0.0   # Extension for handling Cross-Origin Resource Sharing
+requests==2.31.0    # HTTP library used to fetch live market data from Binance API
+
+# --- Data Analysis and Math ---
+pandas==2.2.0       # Essential for data manipulation, CSV handling, and calculating indicators (RSI, Volatility)
+numpy==1.26.3       # Fundamental package for numerical computations and matrix operations
+
+# --- Artificial Intelligence and Machine Learning ---
+scikit-learn==1.4.0 # Provides the Random Forest algorithm and data scaling tools (MinMaxScaler)
+torch==2.2.0        # PyTorch library: The engine for deep neural networks (KAN, TrendNet, GRU)

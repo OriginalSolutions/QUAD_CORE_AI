@@ -1,0 +1,211 @@
+/* =========================================
+   1. USTAWIENIA GLOBALNE
+   ========================================= */
+html, body { 
+    height: 100%; 
+    margin: 0; 
+    padding: 0; 
+    background-color: #0e0e0e; 
+    color: #c0c0c0; 
+    font-family: sans-serif; 
+    display: flex; 
+    flex-direction: column; 
+    overflow-y: auto; 
+}
+
+/* =========================================
+   2. NAGŁÓWEK (RWD)
+   ========================================= */
+#header { 
+    flex: 0 0 auto; 
+    display: flex; 
+    flex-direction: row; /* Domyślnie poziomo */
+    align-items: stretch; /* Rozciągnij do wysokości */
+    justify-content: flex-start;
+    padding: 15px 20px; 
+    background: #1a1a1a; 
+    border-bottom: 1px solid #333; 
+    gap: 30px; /* Odstęp między lewą sekcją a panelem */
+}
+
+/* BLOK LEWY (Tytuł + Cena) */
+.header-info-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Rozłóż góra/dół */
+    min-width: 180px;
+    padding: 5px 0; /* Lekki padding, aby wyrównać z treścią panelu */
+}
+
+.main-title {
+    font-weight: bold;
+    font-size: 20px; /* Nieco większy */
+    color: #fff;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.price-status-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.price-label {
+    font-size: 10px;
+    color: #777;
+    text-transform: uppercase;
+}
+
+.price-val {
+    font-size: 28px; /* Duża, wyraźna cena */
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.status-line {
+    font-size: 11px;
+    color: #555;
+    margin-top: 2px;
+    font-weight: bold;
+}
+
+/* =========================================
+   3. PANEL AI (RWD GRID)
+   ========================================= */
+.ai-panel { 
+    flex: 1; /* Zajmij resztę miejsca */
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center;
+    background: #222; 
+    padding: 10px 15px; 
+    border-radius: 4px; 
+    border: 1px solid #333; 
+}
+
+.ai-row, .consensus-row { 
+    display: grid; 
+    /* Desktop: Etykieta | Szczegóły | Wartość */
+    grid-template-columns: 140px 1fr auto; 
+    align-items: center; 
+    width: 100%; 
+    margin: 4px 0;
+    line-height: 1.2; 
+    border-bottom: 1px solid #2a2a2a; 
+    padding-bottom: 3px;
+}
+
+.consensus-row {
+    border-top: 2px solid #444; 
+    border-bottom: none;
+    margin-top: 8px; 
+    padding-top: 8px;
+}
+
+.ai-label, .con-label { 
+    font-size: 14px; 
+    color: #fff; 
+    font-weight: bold; 
+    white-space: nowrap; 
+}
+
+.ai-details { 
+    font-size: 11px; 
+    color: #777; 
+    font-family: monospace; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    padding: 0 10px; 
+}
+
+.ai-val, .con-val { 
+    text-align: right; 
+    font-weight: bold; 
+    font-size: 14px; 
+    white-space: nowrap;
+}
+
+.con-val { font-size: 17px; } /* Consensus nieco większy */
+
+.up { color: #00e676; } 
+.down { color: #ff1744; } 
+.neutral { color: #888; }
+
+/* =========================================
+   MEDIA QUERIES (RESPONSYWNOŚĆ)
+   ========================================= */
+
+/* Tablet i mniejsze ekrany (poniżej 900px) */
+@media (max-width: 900px) {
+    #header {
+        flex-direction: column; /* Układ pionowy */
+        gap: 15px;
+    }
+    
+    .header-info-block {
+        flex-direction: row; /* Tytuł obok ceny na mobilu */
+        align-items: center;
+        width: 100%;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+    }
+    
+    .main-title { margin-bottom: 0; }
+    .price-val { font-size: 20px; }
+}
+
+/* Telefon (poniżej 600px) */
+@media (max-width: 600px) {
+    .header-info-block {
+        flex-direction: column; /* Tytuł nad ceną */
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    /* Ukrywamy środkową kolumnę (szczegóły) na małych ekranach */
+    .ai-row, .consensus-row {
+        grid-template-columns: 1fr auto; /* Tylko Nazwa i Wynik */
+    }
+    
+    .ai-details, .con-details-placeholder {
+        display: none;
+    }
+    
+    .ai-label { font-size: 13px; }
+    .ai-val { font-size: 13px; }
+    
+    .ai-panel { min-width: auto; width: 100%; box-sizing: border-box; }
+}
+
+/* =========================================
+   4. RESZTA STYLÓW (BEZ ZMIAN)
+   ========================================= */
+#chart-container { position: relative; width: 100%; display: flex; flex-direction: column; background-color: #0e0e0e; }
+#chart-price { width: 100%; height: 450px; }
+#chart-pnl { width: 100%; height: 450px; border-top: 2px solid #333; }
+
+#loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(14,14,14,0.9); display: flex; justify-content: center; align-items: center; z-index: 99; visibility: hidden; }
+.spinner { border: 4px solid #333; border-top: 4px solid #00e676; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+#footer-section {
+    flex: 0 0 auto; background: #111; border-top: 1px solid #333; 
+    padding: 20px 20px; display: flex; flex-direction: column; font-size: 12px;
+}
+.disclaimer-box { width: 100%; color: #555; margin-bottom: 20px; padding-right: 0; text-align: left; }
+.disclaimer-box h4 { margin: 0 0 5px 0; color: #888; }
+.disclaimer-box p { margin: 0; line-height: 1.4; }
+
+.controls-box { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; border-top: 1px dashed #333; padding-top: 20px; }
+.download-btn { display: inline-block; padding: 8px 15px; background: #222; color: #fff; border: 1px solid #444; text-decoration: none; border-radius: 4px; transition: background 0.2s; }
+.download-btn:hover { background: #333; }
+
+.github-container { margin-top: 15px; text-align: center; }
+.github-desc { color: #555; font-size: 11px; margin-bottom: 3px; font-style: italic; }
+.repo-link { display: inline-block; font-size: 11px; color: #00e676 !important; text-decoration: none !important; font-family: monospace; opacity: 0.9; }
+.repo-link:hover { opacity: 1; }
+
+.rangeslider-container .scatterlayer .point,
+.range-slider .scatterlayer .point { display: none !important; opacity: 0 !important; }

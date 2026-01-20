@@ -1,0 +1,25 @@
+</h4>DISCLAIMER:</h4> 
+<p>
+This is a test page only and does not constitute investment advice. 
+Trading Bitcoin involves significant risk. Every user buys and sells at their own risk. 
+It is possible to lose your entire capital in this market. 
+This site serves solely for testing AI models, Monte Carlo systems, and Random Forest algorithms.
+
+Trading cryptocurrencies involves a high degree of risk and is not suitable for all investors. This tool is for educational purposes only and uses simulated paper trading. Past performance is not indicative of future results.
+
+
+<br>
+<br>
+
+
+<h4>System Logic Explained</h4>
+<p>
+    All percentage values represent the probability of an UPWARD trend. 
+    <br>
+    <strong>0%</strong> = Strong Sell, <strong>100%</strong> = Strong Buy.
+</p>
+<p>
+    <strong>Multiplier (x-1)</strong> indicates a contra-trade strategy (Betting against the consensus).
+    <br>
+    <strong>Multiplier (x+1)</strong> indicates following the trend.
+</p>

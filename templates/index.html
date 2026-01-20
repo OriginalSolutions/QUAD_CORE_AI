@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Trading Strategy - Quad-Core System</title>
+    <link rel="stylesheet" href="/static/style.css"> 
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+</head>
+<body>
+
+    <div id="loading-overlay"><div class="spinner"></div></div>
+
+    <!-- NAGŁÓWEK RWD -->
+    <div id="header">
+        
+        <!-- LEWA KOLUMNA: TYTUŁ + CENA + STATUS -->
+        <div class="header-info-block">
+            <div class="main-title">QUAD-CORE AI</div>
+            
+            <div class="price-status-container">
+                <div class="price-label">BTC/USDT PRICE</div>
+                <div class="price-val" id="last-price">--</div>
+                <div class="status-line">STATUS: <span id="server-status">CONNECTING</span></div>
+            </div>
+        </div>
+        
+        <!-- PRAWA KOLUMNA: PANEL AI (Rozciąga się) -->
+        <div class="ai-panel">
+            <div class="ai-row">
+                <div class="ai-label">Monte Carlo</div>
+                <div class="ai-details" id="mc-specs">Loading...</div>
+                <div class="ai-val" id="mc-val">--</div>
+            </div>
+            <div class="ai-row">
+                <div class="ai-label">Random Forest</div>
+                <div class="ai-details" id="rf-math">Loading...</div>
+                <div class="ai-val" id="rf-val">--</div>
+            </div>
+            <div class="ai-row">
+                <div class="ai-label">KAN (v2.0)</div>
+                <div class="ai-details">Kolmogorov-Arnold Splines</div>
+                <div class="ai-val" id="kan-val">--</div>
+            </div>
+            <div class="ai-row">
+                <div class="ai-label">Neural Trend</div>
+                <div class="ai-details">Direct Network Output</div>
+                <div class="ai-val" id="net-val">--</div>
+            </div>
+            <div class="consensus-row">
+                <div class="con-label">Consensus:</div>
+                <!-- Pusty div dla zachowania gridu -->
+                <div class="con-details-placeholder"></div> 
+                <div class="con-val" id="final-val">Loading...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Kontener Wykresów -->
+    <div id="chart-container">
+        <div id="chart-price"></div>
+        <div id="chart-pnl"></div>
+    </div>
+
+    <!-- Stopka -->
+    <div id="footer-section">
+        <div class="disclaimer-box">
+            {{ disclaimer | safe }}
+        </div>
+        <div class="controls-box">
+            <a href="/download-csv" class="download-btn">Download CSV History</a>
+            <div class="github-container">
+                <div class="github-desc">
+                    Source code, model architecture, training methods & hyperparameters:
+                </div>
+                <a href="https://github.com/OriginalSolutions" target="_blank" class="repo-link">
+                    https://github.com/OriginalSolutions
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+
+</body>
+</html>
