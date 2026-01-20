@@ -1,6 +1,3 @@
----
-
-```markdown
 # QUAD_CORE_AI 🧠
 
 **Financial Market Forecasting System Based on Cyclic Consensus**
